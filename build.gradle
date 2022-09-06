@@ -1,0 +1,98 @@
+plugins {
+    id 'java'
+    id "io.qameta.allure" version "2.8.1"
+}
+
+
+group 'org.example'
+version '1.0-SNAPSHOT'
+apply plugin: 'java'
+sourceCompatibility = '1.8'
+repositories {
+    mavenCentral()
+}
+
+task runSuite(type: JavaExec, dependsOn: 'classes') {
+    main = 'org.testng.TestNG'
+    classpath = files("./src/main/resources",
+            project.sourceSets.main.compileClasspath,
+            project.sourceSets.test.compileClasspath,
+            project.sourceSets.main.runtimeClasspath,
+            project.sourceSets.test.runtimeClasspath)
+    args = ["-parallel", "methods", "-threadcount", "1", "-d", "./build/test-output", "./src/main/resources/testng.xml"]
+//args to main(entry point)
+    systemProperty 'allure.results.directory', 'build/allure-results'
+    systemProperty 'allure.report.directory', 'reports'
+}
+task runTests(dependsOn: runSuite){
+    runSuite.finalizedBy 'allureReport'
+
+}
+task createEnvProp(dependsOn: runTests) {
+    copy {
+        from './src/main/resources/local.properties'
+        into "./build/allure-results"
+        rename(/local.properties/, 'environment.properties')
+    }
+}
+
+allure {
+
+    version = '2.6.0'
+    aspectjweaver = true
+    autoconfigure = true
+    downloadLink = 'file:.allure/allure-2.6.0.zip'
+    useCucumberJVM {
+        version = '2.6.0'
+    }
+
+}
+
+//task wrapper(type: Wrapper) {
+//    gradleVersion = '6.7'
+//}
+dependencies {
+
+    implementation fileTree(dir: 'src/lib',include:['*.jar'])
+    implementation 'org.testng:testng:6.14.3'
+    //1.2.6 cucm-java version cucumber options removed
+    implementation 'info.cukes:cucumber-java:1.2.5'
+    implementation 'info.cukes:cucumber-testng:1.2.5'
+    implementation 'org.seleniumhq.selenium:selenium-java:3.11.0'
+    implementation 'com.relevantcodes:extentreports:2.41.2'
+    implementation 'org.springframework:spring-beans:5.3.22'
+    implementation 'org.springframework:spring-context:5.3.22'
+    implementation 'org.springframework:spring-core:5.3.22'
+    implementation 'org.springframework:spring-jdbc:5.3.22'
+    implementation 'org.springframework:spring-test:5.3.22'
+    implementation 'io.cucumber:cucumber-spring:7.5.0'
+    implementation 'org.springframework.integration:spring-integration-test:5.5.14'
+    implementation 'org.springframework.boot:spring-boot:2.7.2'
+    implementation 'io.spring.dependency-management:io.spring.dependency-management.gradle.plugin:1.0.12.RELEASE'
+    implementation 'org.springframework:spring-context-support:5.3.22'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter', version: '2.6.6'
+    implementation group: 'com.microsoft.sqlserver', name: 'mssql-jdbc', version: '10.2.1.jre17'
+    implementation 'org.apache.commons:commons-dbcp2:2.9.0'
+    implementation 'org.apache.httpcomponents:httpclient:4.5.13'
+    implementation 'com.github.automatedowl:allure-environment-writer:1.0.0'
+    implementation 'javax.mail:mail:1.4.1'
+    implementation 'io.github.bonigarcia:webdrivermanager:4.4.3'
+    implementation group: 'uk.co.caprica', name: 'vlcj', version: '3.10.1'
+    implementation group: 'net.java.dev.jna', name: 'jna', version: '4.2.0'
+    compile group: 'com.assertthat', name: 'selenium-shutterbug', version: '0.7'
+    compile group: 'com.cedarsoftware', name: 'json-io', version: '4.9.0'
+    compile group: 'com.codeborne', name: 'selenide', version: '4.0'
+    // implementation group: 'io.qameta.allure', name: 'allure-java-commons', version: '2.12.1'
+    implementation group: 'io.qameta.allure', name: 'allure-testng', version: '2.12.1'
+   // implementation group: 'io.qameta.allure', name: 'allure-cucumber2-jvm', version: '2.6.0'
+   // implementation 'io.qameta.allure:allure-generator:2.18.1'
+    compile group: 'org.apache.poi', name: 'poi', version: '4.0.1'
+    compile group: 'org.apache.poi', name: 'poi-ooxml', version: '4.0.1'
+    //implementation group: 'org.apache.httpcomponents', name: 'httpcore', version: '4.4.11'
+
+
+}
+
+test {
+    useTestNG()
+}
