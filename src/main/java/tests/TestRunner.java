@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-import static com.github.automatedowl.tools.AllureEnvironmentWriter.allureEnvironmentWriter;
+//import static com.github.automatedowl.tools.AllureEnvironmentWriter.allureEnvironmentWriter;
 
 
 
