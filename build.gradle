@@ -28,13 +28,13 @@ task runTests(dependsOn: runSuite){
     runSuite.finalizedBy 'allureReport'
 
 }
-task createEnvProp(dependsOn: runTests) {
-    copy {
-        from './src/main/resources/local.properties'
-        into "./build/allure-results"
-        rename(/local.properties/, 'environment.properties')
-    }
-}
+//task createEnvProp(dependsOn: runTests) {
+//    copy {
+//        from './src/main/resources/local.properties'
+//        into "./build/allure-results"
+//        rename(/local.properties/, 'environment.properties')
+//    }
+//}
 
 allure {
 
